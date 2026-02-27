@@ -1,5 +1,7 @@
 import React from 'react';
 import { programmes, getProgrammeData } from '../../data/mockData';
+import KPICard from '../shared/KPICard';
+import RAGBadge from '../shared/RAGBadge';
 import DocumentsTab from './tabs/DocumentsTab';
 import PlanTab from './tabs/PlanTab';
 import WorkstreamsTab from './tabs/WorkstreamsTab';
@@ -31,18 +33,26 @@ const ProgrammeView: React.FC<ProgrammeViewProps> = ({
 
   const { stats, risks, meetings } = programmeData;
 
-  // Determine stat tile colors based on RAG status
-  const getStatTileColor = (type: 'overall' | 'actions' | 'risks' | 'milestone') => {
+  // Determine stat tile colors and subtextVariant based on RAG status
+  const getStatTileConfig = (type: 'overall' | 'actions' | 'risks' | 'milestone') => {
     if (type === 'overall') {
-      return programme.rag;
+      return { color: programme.rag as 'red' | 'amber' | 'green', subtextVariant: 'default' as const };
     }
     if (type === 'actions') {
-      return stats.openActionsSub.includes('overdue') ? 'amber' : 'blue';
+      const hasOverdue = stats.openActionsSub.includes('overdue');
+      return { 
+        color: hasOverdue ? 'amber' as const : 'blue' as const, 
+        subtextVariant: hasOverdue ? 'warning' as const : 'default' as const 
+      };
     }
     if (type === 'risks') {
-      return stats.openRisksSub.includes('high') ? 'red' : 'amber';
+      const hasHighSeverity = stats.openRisksSub.includes('high');
+      return { 
+        color: hasHighSeverity ? 'red' as const : 'amber' as const, 
+        subtextVariant: hasHighSeverity ? 'danger' as const : 'warning' as const 
+      };
     }
-    return 'green';
+    return { color: 'green' as const, subtextVariant: 'default' as const };
   };
 
   // Calculate badge counts
@@ -77,40 +87,40 @@ const ProgrammeView: React.FC<ProgrammeViewProps> = ({
           </div>
         </div>
         <div className="header-actions">
-          <span className={`rag-pill ${programme.rag}`}>
-            {programme.rag === 'green' ? 'Green' : programme.rag === 'amber' ? 'Amber' : 'Red'}
-          </span>
-          <button className="btn btn-outline btn-sm">Generate Report</button>
-          <button className="btn btn-primary btn-sm">Edit Programme</button>
+          <RAGBadge status={programme.rag} />
+          <button className="btn btn-primary btn-sm">Generate Report</button>
+          <button className="btn btn-outline btn-sm">Edit Programme</button>
         </div>
       </div>
 
       {/* SUMMARY TILES */}
       <div className="grid-4" style={{ marginBottom: '20px' }}>
-        <div className={`stat-tile ${getStatTileColor('overall')}`}>
-          <div className="stat-label">Overall RAG</div>
-          <div className="stat-value" style={{ fontSize: '20px', paddingTop: '4px' }}>
-            {stats.overall}
-          </div>
-          <div className="stat-sub">{stats.overallSub}</div>
-        </div>
-        <div className={`stat-tile ${getStatTileColor('actions')}`}>
-          <div className="stat-label">Open Actions</div>
-          <div className="stat-value">{stats.openActions}</div>
-          <div className="stat-sub">{stats.openActionsSub}</div>
-        </div>
-        <div className={`stat-tile ${getStatTileColor('risks')}`}>
-          <div className="stat-label">Open Risks</div>
-          <div className="stat-value">{stats.openRisks}</div>
-          <div className="stat-sub">{stats.openRisksSub}</div>
-        </div>
-        <div className={`stat-tile ${getStatTileColor('milestone')}`}>
-          <div className="stat-label">Next Milestone</div>
-          <div className="stat-value" style={{ fontSize: '16px', paddingTop: '6px' }}>
-            {stats.nextMilestone}
-          </div>
-          <div className="stat-sub">{stats.nextMilestoneSub}</div>
-        </div>
+        <KPICard
+          label="OVERALL RAG"
+          value={stats.overall}
+          subtext={stats.overallSub}
+          color={getStatTileConfig('overall').color}
+        />
+        <KPICard
+          label="OPEN ACTIONS"
+          value={stats.openActions}
+          subtext={stats.openActionsSub}
+          color={getStatTileConfig('actions').color}
+          subtextVariant={getStatTileConfig('actions').subtextVariant}
+        />
+        <KPICard
+          label="OPEN RISKS"
+          value={stats.openRisks}
+          subtext={stats.openRisksSub}
+          color={getStatTileConfig('risks').color}
+          subtextVariant={getStatTileConfig('risks').subtextVariant}
+        />
+        <KPICard
+          label="NEXT MILESTONE"
+          value={stats.nextMilestone}
+          subtext={stats.nextMilestoneSub}
+          color={getStatTileConfig('milestone').color}
+        />
       </div>
 
       {/* TABS */}

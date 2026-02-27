@@ -1,9 +1,19 @@
 import React from 'react';
 import { programmes, portfolioStats, overdueActions } from '../../data/mockData';
+import KPICard from '../shared/KPICard';
 
 interface PortfolioViewProps {
   onNavigateToProgramme: (programmeId: string) => void;
 }
+
+// Helper function to calculate days overdue
+const calculateDaysOverdue = (dueDate: string): number => {
+  const today = new Date('2026-02-27');
+  const due = new Date(`${dueDate} 2026`);
+  const diffTime = today.getTime() - due.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+};
 
 const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateToProgramme }) => {
   return (
@@ -15,32 +25,37 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateToProgramme }) 
         </div>
         <div className="header-actions">
           <button className="btn btn-outline btn-sm">Export Report</button>
-          <button className="btn btn-primary btn-sm">+ New Programme</button>
         </div>
       </div>
 
       {/* STAT TILES */}
       <div className="grid-4" style={{ marginBottom: '20px' }}>
-        <div className="stat-tile blue">
-          <div className="stat-label">Active Programmes</div>
-          <div className="stat-value">{portfolioStats.activeProgrammes}</div>
-          <div className="stat-sub">{portfolioStats.activeProgrammesSub}</div>
-        </div>
-        <div className="stat-tile amber">
-          <div className="stat-label">Open Actions</div>
-          <div className="stat-value">{portfolioStats.openActions}</div>
-          <div className="stat-sub">{portfolioStats.openActionsSub}</div>
-        </div>
-        <div className="stat-tile red">
-          <div className="stat-label">Open Risks</div>
-          <div className="stat-value">{portfolioStats.openRisks}</div>
-          <div className="stat-sub">{portfolioStats.openRisksSub}</div>
-        </div>
-        <div className="stat-tile green">
-          <div className="stat-label">Milestones This Month</div>
-          <div className="stat-value">{portfolioStats.milestones}</div>
-          <div className="stat-sub">{portfolioStats.milestonesSub}</div>
-        </div>
+        <KPICard
+          label="ACTIVE PROGRAMMES"
+          value={portfolioStats.activeProgrammes}
+          subtext={portfolioStats.activeProgrammesSub}
+          color="blue"
+        />
+        <KPICard
+          label="OPEN ACTIONS"
+          value={portfolioStats.openActions}
+          subtext="6 overdue"
+          subtextVariant="warning"
+          color="amber"
+        />
+        <KPICard
+          label="OPEN RISKS"
+          value={portfolioStats.openRisks}
+          subtext="3 high severity"
+          subtextVariant="danger"
+          color="red"
+        />
+        <KPICard
+          label="MILESTONES THIS MONTH"
+          value={portfolioStats.milestones}
+          subtext={portfolioStats.milestonesSub}
+          color="green"
+        />
       </div>
 
       {/* PROGRAMMES GRID */}
@@ -79,7 +94,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateToProgramme }) 
       {/* CROSS PROGRAMME ACTIONS */}
       <div className="card">
         <div className="card-header">
-          <div className="card-title">Overdue Actions — All Programmes</div>
+          <div className="section-header">Overdue Actions — All Programmes</div>
           <span className="agent-tag">Actions Agent</span>
         </div>
         <table className="table">
@@ -89,23 +104,30 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateToProgramme }) 
               <th>Programme</th>
               <th>Owner</th>
               <th>Due</th>
+              <th>Days Overdue</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
-            {overdueActions.map((action, index) => (
-              <tr key={index}>
-                <td>{action.description}</td>
-                <td>{action.programme}</td>
-                <td>{action.owner}</td>
-                <td style={{ color: 'var(--red)' }}>{action.due}</td>
-                <td>
-                  <span className={`action-status ${action.status}`}>
-                    {action.status === 'overdue' ? 'Overdue' : action.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
+            {overdueActions.map((action, index) => {
+              const daysOverdue = calculateDaysOverdue(action.due);
+              return (
+                <tr key={index}>
+                  <td>{action.description}</td>
+                  <td>{action.programme}</td>
+                  <td>{action.owner}</td>
+                  <td style={{ color: 'var(--red)' }}>{action.due}</td>
+                  <td>
+                    <span className="days-overdue">{daysOverdue} days</span>
+                  </td>
+                  <td>
+                    <span className={`action-status ${action.status}`}>
+                      {action.status === 'overdue' ? 'Overdue' : action.status}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

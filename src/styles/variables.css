@@ -1,15 +1,34 @@
 :root {
+  /* NHS Brand Colors */
   --navy: #003087;
   --blue: #005EB8;
   --light-blue: #41B6E6;
-  --green: #009639;
-  --amber: #FFB81C;
-  --red: #DA291C;
   --white: #FFFFFF;
+  
+  /* NHS RAG Status Colors (Standardized) */
+  --red: #D5281B;
+  --red-bg: #FDECEA;
+  --amber: #D47900;
+  --amber-bg: #FFF4E5;
+  --green: #007F3B;
+  --green-bg: #E8F5E9;
+  --complete: #003087;
+  --complete-bg: #E8F0FE;
+  
+  /* Greyscale System */
   --grey-1: #F0F4F5;
-  --grey-2: #D8DDE0;
-  --grey-3: #AEB7BD;
-  --grey-4: #425563;
+  --grey-2: #E8EDEE;
+  --grey-3: #BFC9CE;
+  --grey-4: #768692;
+  --grey-5: #425563;
   --text: #212B32;
+  
+  /* Typography Scale */
+  --text-page-title: 28px;
+  --text-section-header: 13px;
+  --text-body: 14px;
+  --text-meta: 12px;
+  
+  /* Layout */
   --sidebar-w: 240px;
 }
