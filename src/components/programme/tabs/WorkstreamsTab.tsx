@@ -32,7 +32,7 @@ const WorkstreamsTab: React.FC<WorkstreamsTabProps> = ({ programmeId }) => {
   };
   
   // Mock task data for expanded view
-  const getMockTasks = (workstreamId: string) => [
+  const getMockTasks = () => [
     { name: 'Initial requirements gathering', completed: true },
     { name: 'Stakeholder workshop completion', completed: true },
     { name: 'Draft specification review', completed: false, overdue: false },
@@ -89,7 +89,7 @@ const WorkstreamsTab: React.FC<WorkstreamsTabProps> = ({ programmeId }) => {
                 }}>
                   Tasks
                 </div>
-                {getMockTasks(workstream.id).map((task, idx) => (
+                {getMockTasks().map((task, idx) => (
                   <div key={idx} className={`workstream-task-item ${task.overdue ? 'overdue' : ''}`}>
                     <span style={{ marginRight: '8px' }}>
                       {task.completed ? '✓' : '○'}
